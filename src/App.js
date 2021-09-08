@@ -1,4 +1,24 @@
-import { Formik } from 'formik'
+import { Formik, Field } from 'formik'
+import styled from '@emotion/styled'
+import * as Yup from 'yup'
+
+const validation = () => {
+  return Yup.object().shape({
+    email: Yup.string().email('メールアドレスの形式で入力してください').required('必須項目'),
+    password: Yup.string().required('必須項目です'),
+  })
+}
+
+const Input = ({ name }) => (
+  <Field name={name}>
+    {({ field, form: { errors } }) => (
+      <div>
+        <input {...field} />
+        <Error>{errors[name]}</Error>
+      </div>
+    )}
+  </Field>
+)
 
 const App = () => {
   return (
@@ -6,20 +26,18 @@ const App = () => {
       <h1>formik test</h1>
       <Formik
         initialValues={{ email: '', password: '' }}
-        validate={(values) => {
-          const errors = {}
-          return errors
-        }}
+        validationSchema={validation()}
         onSubmit={(values) => console.log(values)}
-        render={(props) => (
-          <form onSubmit={props.handleSubmit}>
+        onChange={(values) => console.log(values)}
+        render={({ values, errors, handleSubmit, handleChange }) => (
+          <form onSubmit={handleSubmit}>
             <div>
               <label>email</label>
-              <input type="email" name="email" value={props.values.email} onChange={props.handleChange} />
+              <Input name="email" />
             </div>
             <div>
               <label>password</label>
-              <input type="password" name="password" value={props.values.password} onChange={props.handleChange} />
+              <Input name="password" />
             </div>
             <button type="submit">送信</button>
           </form>
@@ -28,5 +46,9 @@ const App = () => {
     </div>
   )
 }
+
+const Error = styled.span`
+  color: red;
+`
 
 export default App
